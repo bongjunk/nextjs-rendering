@@ -3,6 +3,7 @@
 import React, { use } from 'react';
 import styled from 'styled-components';
 import { headers } from '../_type/tableType';
+import axios from 'axios';
 
 const TableWrapper = styled.table`
   border: 1px #a39485 solid;
@@ -30,9 +31,9 @@ const TableData = styled.td<{ align?: any }>`
 `;
 
 // SSG(Static-Site Generation)
-const Ssg = () => {
-  const ssgData = use(fetchData());
-  console.log('ssgData', ssgData);
+const Axios = () => {
+  const axiosData = use(fetchData());
+  // const axiosTest = testAxios();
 
   return (
     <>
@@ -44,9 +45,9 @@ const Ssg = () => {
             })}
           </tr>
         </TableHead>
-        {ssgData?.length > 0 && (
+        {axiosData?.length > 0 && (
           <tbody>
-            {ssgData.map((r: any, idx: number) => {
+            {axiosData.map((r: any, idx: number) => {
               return (
                 <tr key={idx}>
                   <TableData align>{r?.id}</TableData>
@@ -63,14 +64,33 @@ const Ssg = () => {
   );
 };
 
-export default Ssg;
+export default Axios;
 
-// data fetch
+// data fetch - async/await 사용 시 사용법
 const fetchData = async () => {
-  const userData = await fetch(`https://jsonplaceholder.typicode.com/users`, {
-    // cache: 'force-cache' - 기본값(getStaticProps와 유사)
-    cache: 'force-cache',
-  });
-  const data = await userData.json();
-  return data;
+  try {
+    const res = await axios.get(`https://jsonplaceholder.typicode.com/users`);
+    const data = res.data;
+    return data;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+// export const fetchData = async () => {
+//   try {
+//     const res = await axios.get(`https://jsonplaceholder.typicode.com/users`);
+//     const data = res.data;
+//     return data;
+//   } catch (e) {
+//     console.log(e);
+//   }
+// };
+
+// Other uses
+const testAxios = () => {
+  axios
+    .get(`https://jsonplaceholder.typicode.com/users`)
+    .then((response) => console.log(response))
+    .catch((error) => console.log(error));
 };

@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 
-const TextTitle = styled.p`
+const TextTitle = styled.h2`
   color: #fff;
   font-size: 1.5rem;
   text-align: center;
@@ -35,6 +35,7 @@ const Main = () => {
       <TextTitle>Types of Next.js 13 Rendering</TextTitle>
       <PageType onClick={() => router.push('/ssg')}>SSG</PageType>
       <PageType onClick={() => router.push('/ssr')}>SSR</PageType>
+      <PageType onClick={() => router.push('/axios')}>AXIOS 맛보기</PageType>
     </>
   );
 };
