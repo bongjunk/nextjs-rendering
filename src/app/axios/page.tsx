@@ -1,9 +1,14 @@
 'use client';
 
-import React, { use } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { headers } from '../_type/tableType';
 import axios from 'axios';
+
+const Title = styled.p`
+  font-size: 2rem;
+  font-weight: bold;
+`;
 
 const TableWrapper = styled.table`
   border: 1px #a39485 solid;
@@ -30,13 +35,71 @@ const TableData = styled.td<{ align?: any }>`
   text-align: ${(props): string => (props?.align ? 'center' : 'left')};
 `;
 
+const DateTimeText = styled.p`
+  font-size: 1.5rem;
+  font-weight: bold;
+`;
+
 // SSG(Static-Site Generation)
 const Axios = () => {
-  const axiosData = use(fetchData());
-  // const axiosTest = testAxios();
+  const [axiosData, setAxiosData] = useState<any[]>([]);
+  const [dateTimeData, setDateTimeData] = useState<any>();
+
+  const dateTime = dateTimeData?.datetime;
+  const dateFormat = dateTime?.substring(0, 19);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          `https://jsonplaceholder.typicode.com/users`
+        );
+        const data = res.data;
+        setAxiosData(data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const dateTimeData = async () => {
+      try {
+        const res = await axios.get('https://worldtimeapi.org/api/ip');
+        const data = res.data;
+        setDateTimeData(data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    dateTimeData();
+  }, []);
+
+  // // Other uses
+  // const [testAxiosData, setTestAxiosData] = useState<any>();
+  // console.log('testAxiosData', testAxiosData);
+
+  // useEffect(() => {
+  //   const testAxios = () => {
+  //     axios
+  //       .get(`https://jsonplaceholder.typicode.com/users`)
+  //       .then((response) => {
+  //         const data = response.data;
+  //         setTestAxiosData(data);
+  //       })
+  //       .catch((error) => console.log(error));
+  //   };
+  //   testAxios();
+  // }, []);
 
   return (
     <>
+      {axiosData.length > 0 ? (
+        <Title>CSR 방식으로 렌더링 되는 중..</Title>
+      ) : (
+        <Title>loading..</Title>
+      )}
       <TableWrapper>
         <TableHead>
           <tr>
@@ -45,7 +108,7 @@ const Axios = () => {
             })}
           </tr>
         </TableHead>
-        {axiosData?.length > 0 && (
+        {axiosData?.length > 0 ? (
           <tbody>
             {axiosData.map((r: any, idx: number) => {
               return (
@@ -58,8 +121,21 @@ const Axios = () => {
               );
             })}
           </tbody>
+        ) : (
+          <tbody>
+            <tr>
+              <td colSpan={4} align="center">
+                loading..
+              </td>
+            </tr>
+          </tbody>
         )}
       </TableWrapper>
+      {!dateTimeData ? (
+        <DateTimeText>loading..</DateTimeText>
+      ) : (
+        <DateTimeText>{dateFormat}</DateTimeText>
+      )}
     </>
   );
 };
@@ -77,20 +153,13 @@ const fetchData = async () => {
   }
 };
 
-// export const fetchData = async () => {
-//   try {
-//     const res = await axios.get(`https://jsonplaceholder.typicode.com/users`);
-//     const data = res.data;
-//     return data;
-//   } catch (e) {
-//     console.log(e);
-//   }
-// };
-
 // Other uses
 const testAxios = () => {
   axios
     .get(`https://jsonplaceholder.typicode.com/users`)
-    .then((response) => console.log(response))
+    .then((response) => {
+      const data = response.data;
+      return data;
+    })
     .catch((error) => console.log(error));
 };

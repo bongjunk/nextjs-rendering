@@ -35,7 +35,7 @@ const Main = () => {
       <TextTitle>Types of Next.js 13 Rendering</TextTitle>
       <PageType onClick={() => router.push('/ssg')}>SSG</PageType>
       <PageType onClick={() => router.push('/ssr')}>SSR</PageType>
-      <PageType onClick={() => router.push('/axios')}>AXIOS 맛보기</PageType>
+      <PageType onClick={() => router.push('/axios')}>AXIOS CSR</PageType>
     </>
   );
 };

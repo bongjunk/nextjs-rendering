@@ -2,7 +2,13 @@
 
 import React, { use } from 'react';
 import styled from 'styled-components';
+import { dateTimeData, fetchData } from '../../../lib/server/components/ssg';
 import { headers } from '../_type/tableType';
+
+const Title = styled.p`
+  font-size: 2rem;
+  font-weight: bold;
+`;
 
 const TableWrapper = styled.table`
   border: 1px #a39485 solid;
@@ -29,13 +35,26 @@ const TableData = styled.td<{ align?: any }>`
   text-align: ${(props): string => (props?.align ? 'center' : 'left')};
 `;
 
+const DateTimeText = styled.p`
+  font-size: 1.5rem;
+  font-weight: bold;
+`;
+
 // SSG(Static-Site Generation)
 const Ssg = () => {
   const ssgData = use(fetchData());
-  console.log('ssgData', ssgData);
+  const ssgDateData = use(dateTimeData());
+
+  const dateTime = ssgDateData?.datetime;
+  const dateFormat = dateTime?.substring(0, 19);
 
   return (
     <>
+      {ssgData.length > 0 ? (
+        <Title>SSG 방식으로 렌더링 되는 중..</Title>
+      ) : (
+        <Title>loading..</Title>
+      )}
       <TableWrapper>
         <TableHead>
           <tr>
@@ -44,7 +63,7 @@ const Ssg = () => {
             })}
           </tr>
         </TableHead>
-        {ssgData?.length > 0 && (
+        {ssgData?.length > 0 ? (
           <tbody>
             {ssgData.map((r: any, idx: number) => {
               return (
@@ -57,20 +76,23 @@ const Ssg = () => {
               );
             })}
           </tbody>
+        ) : (
+          <tbody>
+            <tr>
+              <td colSpan={4} align="center">
+                loading..
+              </td>
+            </tr>
+          </tbody>
         )}
       </TableWrapper>
+      {!ssgDateData ? (
+        <DateTimeText>loading..</DateTimeText>
+      ) : (
+        <DateTimeText>{dateFormat}</DateTimeText>
+      )}
     </>
   );
 };
 
 export default Ssg;
-
-// data fetch
-const fetchData = async () => {
-  const userData = await fetch(`https://jsonplaceholder.typicode.com/users`, {
-    // cache: 'force-cache' - 기본값(getStaticProps와 유사)
-    cache: 'force-cache',
-  });
-  const data = await userData.json();
-  return data;
-};
