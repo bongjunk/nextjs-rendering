@@ -1,60 +1,48 @@
 'use client';
 
-import React, { use, useEffect } from 'react';
-import styled from 'styled-components';
+import React from 'react';
 import { headers } from '../_type/tableType';
+import {
+  Title,
+  TableWrapper,
+  TableHead,
+  TableData,
+  DateTimeText,
+} from '../styled';
+import useSWR from 'swr';
+import { DateTimeProps, fetchDataProps } from '../type';
 
-const Title = styled.p`
-  font-size: 2rem;
-  font-weight: bold;
-`;
-
-const TableWrapper = styled.table`
-  border: 1px #a39485 solid;
-  font-size: 0.9em;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 5px;
-  overflow: hidden;
-`;
-
-const TableHead = styled.thead`
-  height: 2.5rem;
-  font-weight: bold;
-  color: #fff;
-  background: #73685d;
-`;
-
-const TableData = styled.td<{ align?: any }>`
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background: #fff;
-  padding: 1em 0.5em;
-  vertical-align: middle;
-  text-align: ${(props) => (props?.align ? 'center' : 'left')};
-`;
-
-const DateTimeText = styled.p`
-  font-size: 1.5rem;
-  font-weight: bold;
-`;
+const fetcher = (url: string) =>
+  // cache: 'no-store' - 모든 요청에서 최신 데이터 받아오기(getServerSideProps 와 유사)
+  // 매번 요청 시마다 refetch 된다.
+  fetch(url, { cache: 'no-store' })
+    .then((response) => response.json())
+    .catch((e) => console.log(e));
 
 // SSR(Server-Side Rendering)
 const Ssr = () => {
-  const ssrData = use(fetchData());
-  const ssrDateData = use(dateTimeData());
+  const {
+    data: ssrData,
+    error: ssrError,
+    isLoading: ssrLoading,
+  } = useSWR<fetchDataProps | any>(
+    `https://jsonplaceholder.typicode.com/users`,
+    fetcher
+  );
 
-  // const ssrDat = await fetchData();
-  // const ssrDateDat = await dateTimeData();
+  console.log('ssrData', ssrData);
 
-  const dateTime = ssrDateData?.datetime;
+  const {
+    data: dateData,
+    error: dateError,
+    isLoading: dateLoading,
+  } = useSWR<DateTimeProps | any>(`https://worldtimeapi.org/api/ip`, fetcher);
+  const dateTime = dateData?.datetime;
   const dateFormat = dateTime?.substring(0, 19);
-
-  // console.log('ssrDateData', ssrDateData);
 
   return (
     <>
-      {ssrData.length > 0 ? (
+      {!ssrLoading && !dateLoading ? (
         <Title>SSR 방식으로 렌더링 되는 중..</Title>
       ) : (
         <Title>loading..</Title>
@@ -67,7 +55,7 @@ const Ssr = () => {
             })}
           </tr>
         </TableHead>
-        {ssrData?.length > 0 ? (
+        {!ssrLoading ? (
           <tbody>
             {ssrData.map((r: any, idx: number) => {
               return (
@@ -90,41 +78,13 @@ const Ssr = () => {
           </tbody>
         )}
       </TableWrapper>
-      {!ssrDateData ? (
-        <DateTimeText>loading..</DateTimeText>
-      ) : (
+      {!dateLoading ? (
         <DateTimeText>{dateFormat}</DateTimeText>
+      ) : (
+        <DateTimeText>loading..</DateTimeText>
       )}
     </>
   );
 };
 
 export default Ssr;
-
-// data fetch
-const fetchData = async () => {
-  const res = await fetch(`https://jsonplaceholder.typicode.com/users`, {
-    // cache: 'no-store' - 모든 요청에서 최신 데이터 받아오기(getServerSideProps 와 유사)
-    cache: 'no-store',
-  });
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch data');
-  }
-
-  const data = await res.json();
-  return data;
-};
-
-const dateTimeData = async () => {
-  const res = await fetch(`https://worldtimeapi.org/api/ip`, {
-    cache: 'no-store',
-  });
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch data');
-  }
-
-  const data = await res.json();
-  return data;
-};
