@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 import { headers } from '../_type/tableType';
-import useSWR from 'swr';
+import useSWR, { preload } from 'swr';
 import {
   Title,
   TableWrapper,
@@ -10,7 +10,7 @@ import {
   TableData,
   DateTimeText,
 } from '../styled';
-import { DateTimeProps, fetchDataProps } from '../type';
+import { DateTimeProps, fetchDataProps } from '../_type/fetchType';
 
 // cache: 'force-cache' - 기본값(getStaticProps와 유사), default 값으로 생략가능
 const fetcher = (url: string) =>
@@ -19,24 +19,35 @@ const fetcher = (url: string) =>
     .then((response) => response.json())
     .catch((e) => console.log(e));
 
+// 아래 사용자 구성 요소를 렌더링하기 전에 리소스를 미리 로드합니다.
+// 이는 waterfall 현상을 막을 수 있습니다.
+// 버튼이나 링크를 호버할 때도 preload를 시작할 수 있습니다.
+// preload('https://jsonplaceholder.typicode.com/users', fetcher);
+// preload('https://worldtimeapi.org/api/ip', fetcher);
+
 // SSG(Static-Site Generation)
 const Ssg = () => {
   const {
     data: ssgData,
     error: ssgError,
-    isLoading: ssgLoading,
+    isValidating: ssgLoading,
   } = useSWR<fetchDataProps | any>(
-    `https://jsonplaceholder.typicode.com/users`,
+    'https://jsonplaceholder.typicode.com/users',
     fetcher
+    // { suspense: true }
   );
+
+  console.log(ssgData, ssgError, ssgLoading);
 
   const {
     data: dateData,
     error: dateError,
     isLoading: dateLoading,
-  } = useSWR<DateTimeProps>(`https://worldtimeapi.org/api/ip`, fetcher);
+  } = useSWR<DateTimeProps>('https://worldtimeapi.org/api/ip', fetcher);
   const dateTime = dateData?.datetime;
   const dateFormat = dateTime?.substring(0, 19);
+
+  // const getData = use(dataFetch());
 
   return (
     <>
@@ -53,36 +64,34 @@ const Ssg = () => {
             })}
           </tr>
         </TableHead>
-        {!ssgLoading ? (
-          <tbody>
-            {ssgData.map((r: any, idx: number) => {
-              return (
-                <tr key={idx}>
-                  <TableData align>{r?.id}</TableData>
-                  <TableData>{r?.name}</TableData>
-                  <TableData>{r?.username}</TableData>
-                  <TableData>{r?.email}</TableData>
-                </tr>
-              );
-            })}
-          </tbody>
-        ) : (
-          <tbody>
-            <tr>
-              <td colSpan={4} align="center">
-                loading..
-              </td>
-            </tr>
-          </tbody>
-        )}
+        <tbody>
+          {ssgData?.map((r: any, idx: number) => {
+            return (
+              <tr key={idx}>
+                <TableData align>{r?.id}</TableData>
+                <TableData>{r?.name}</TableData>
+                <TableData>{r?.username}</TableData>
+                <TableData>{r?.email}</TableData>
+              </tr>
+            );
+          })}
+        </tbody>
       </TableWrapper>
-      {!dateLoading ? (
-        <DateTimeText>{dateFormat}</DateTimeText>
-      ) : (
-        <DateTimeText>loading..</DateTimeText>
-      )}
+      <DateTimeText>{dateFormat}</DateTimeText>
     </>
   );
 };
 
 export default Ssg;
+
+// {!dateLoading ? (
+//   <DateTimeText>{dateFormat}</DateTimeText>
+// ) : (
+//   <DateTimeText>loading..</DateTimeText>
+// )}
+
+const dataFetch = async () => {
+  const res = await fetch('https://worldtimeapi.org/api/ip');
+  const data = await res.json();
+  return data;
+};

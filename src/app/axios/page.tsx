@@ -1,7 +1,6 @@
 'use client';
 
 import React, { use, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { headers } from '../_type/tableType';
 import axios from 'axios';
 import {

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import StyledComponentsRegistry from '../../lib/registry';
 import './globals.css';
+import Loading from './loading';
 
 export const metadata = {
   title: 'Create Next App',
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <StyledComponentsRegistry>
+          <Suspense fallback={<Loading />}>{children}</Suspense>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

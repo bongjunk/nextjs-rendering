@@ -10,7 +10,7 @@ import {
   DateTimeText,
 } from '../styled';
 import useSWR from 'swr';
-import { DateTimeProps, fetchDataProps } from '../type';
+import { DateTimeProps, fetchDataProps } from '../_type/fetchType';
 
 const fetcher = (url: string) =>
   // cache: 'no-store' - 모든 요청에서 최신 데이터 받아오기(getServerSideProps 와 유사)

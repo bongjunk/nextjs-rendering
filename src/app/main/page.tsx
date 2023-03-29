@@ -1,8 +1,15 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
+import Link from 'next/link';
+
+const MainWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
 
 const TextTitle = styled.h2`
   color: #fff;
@@ -21,6 +28,7 @@ const PageType = styled.p`
   text-align: center;
   font-weight: bold;
   cursor: pointer;
+  text-decoration: none;
 
   &:hover {
     color: yellow;
@@ -29,15 +37,27 @@ const PageType = styled.p`
 `;
 
 const Main = () => {
-  const router = useRouter();
   return (
     <>
-      <TextTitle>Types of Next.js 13 Rendering</TextTitle>
-      <PageType onClick={() => router.push('/ssg')}>SSG</PageType>
-      <PageType onClick={() => router.push('/ssr')}>SSR</PageType>
-      <PageType onClick={() => router.push('/axios')}>AXIOS CSR</PageType>
+      <MainWrapper>
+        <TextTitle>Types of Next.js 13 Rendering</TextTitle>
+        <Link href="/ssg" style={{ textDecoration: 'none' }}>
+          <PageType>SSG</PageType>
+        </Link>
+        <Link href="/ssr" style={{ textDecoration: 'none' }}>
+          <PageType>SSR</PageType>
+        </Link>
+        <Link href="/axios" style={{ textDecoration: 'none' }}>
+          <PageType>AXIOS CSR</PageType>
+        </Link>
+      </MainWrapper>
     </>
   );
 };
 
 export default Main;
+
+// 03.28 SEO 고려해서 Link로 변경
+// <PageType onClick={() => router.push('/ssg')}>SSG</PageType>
+// <PageType onClick={() => router.push('/ssr')}>SSR</PageType>
+// <PageType onClick={() => router.push('/axios')}>AXIOS CSR</PageType>
