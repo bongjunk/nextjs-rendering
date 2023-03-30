@@ -3,6 +3,7 @@ import styled from 'styled-components';
 export const Title = styled.p`
   font-size: 2rem;
   font-weight: bold;
+  color: #fff;
 `;
 
 export const TableWrapper = styled.table`
@@ -33,4 +34,5 @@ export const TableData = styled.td<{ align?: any }>`
 export const DateTimeText = styled.p`
   font-size: 1.5rem;
   font-weight: bold;
+  color: #fff;
 `;

@@ -95,7 +95,11 @@ const Axios = () => {
         ) : (
           <tbody>
             <tr>
-              <td colSpan={4} align="center">
+              <td
+                colSpan={4}
+                align="center"
+                style={{ background: '#fff', color: '#000' }}
+              >
                 loading..
               </td>
             </tr>
