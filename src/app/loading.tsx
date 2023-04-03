@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const SpinnerKeyFrames = keyframes`
@@ -100,5 +101,9 @@ const Spinner = styled.span`
 `;
 
 export default function Loading() {
-  return <Spinner />;
+  return (
+    <>
+      <Spinner />
+    </>
+  );
 }

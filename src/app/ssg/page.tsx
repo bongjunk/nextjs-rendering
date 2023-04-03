@@ -1,8 +1,8 @@
 'use client';
 
-import React, { use } from 'react';
+import React from 'react';
 import { headers } from '../_type/tableType';
-import useSWR, { preload } from 'swr';
+import useSWR from 'swr';
 import {
   Title,
   TableWrapper,
@@ -34,10 +34,7 @@ const Ssg = () => {
   } = useSWR<fetchDataProps | any>(
     'https://jsonplaceholder.typicode.com/users',
     fetcher
-    // { suspense: true }
   );
-
-  console.log(ssgData, ssgError, ssgLoading);
 
   const {
     data: dateData,
@@ -47,15 +44,12 @@ const Ssg = () => {
   const dateTime = dateData?.datetime;
   const dateFormat = dateTime?.substring(0, 19);
 
-  // const getData = use(dataFetch());
+  if (ssgData === undefined) return null;
+  if (dateData === undefined) return null;
 
   return (
     <>
-      {!ssgLoading && !dateLoading ? (
-        <Title>SSG 방식으로 렌더링 되는 중..</Title>
-      ) : (
-        <Title>loading..</Title>
-      )}
+      <Title>SSG 방식으로 렌더링 되는 중..</Title>
       <TableWrapper>
         <TableHead>
           <tr>
@@ -64,18 +58,20 @@ const Ssg = () => {
             })}
           </tr>
         </TableHead>
-        <tbody>
-          {ssgData?.map((r: any, idx: number) => {
-            return (
-              <tr key={idx}>
-                <TableData align>{r?.id}</TableData>
-                <TableData>{r?.name}</TableData>
-                <TableData>{r?.username}</TableData>
-                <TableData>{r?.email}</TableData>
-              </tr>
-            );
-          })}
-        </tbody>
+        {ssgData && (
+          <tbody>
+            {ssgData?.map((r: any, idx: number) => {
+              return (
+                <tr key={idx}>
+                  <TableData align>{r?.id}</TableData>
+                  <TableData>{r?.name}</TableData>
+                  <TableData>{r?.username}</TableData>
+                  <TableData>{r?.email}</TableData>
+                </tr>
+              );
+            })}
+          </tbody>
+        )}
       </TableWrapper>
       <DateTimeText>{dateFormat}</DateTimeText>
     </>
@@ -83,15 +79,3 @@ const Ssg = () => {
 };
 
 export default Ssg;
-
-// {!dateLoading ? (
-//   <DateTimeText>{dateFormat}</DateTimeText>
-// ) : (
-//   <DateTimeText>loading..</DateTimeText>
-// )}
-
-const dataFetch = async () => {
-  const res = await fetch('https://worldtimeapi.org/api/ip');
-  const data = await res.json();
-  return data;
-};
