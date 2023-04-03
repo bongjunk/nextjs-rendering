@@ -39,8 +39,6 @@ const SsrTable = () => {
   if (ssrData === undefined) return null;
   if (dateData === undefined) return null;
 
-  console.log('ssrData', ssrData, 'dateData', dateData);
-
   return (
     <>
       <Title>SSR 방식으로 렌더링 되는 중..</Title>
