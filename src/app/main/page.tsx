@@ -50,6 +50,9 @@ const Main = () => {
         <Link href="/axios" style={{ textDecoration: 'none' }}>
           <PageType>AXIOS CSR</PageType>
         </Link>
+        <Link href="/testc" style={{ textDecoration: 'none' }}>
+          <PageType>TEST COMP</PageType>
+        </Link>
       </MainWrapper>
     </>
   );
